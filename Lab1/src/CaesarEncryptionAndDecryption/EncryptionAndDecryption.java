@@ -2,107 +2,138 @@ package CaesarEncryptionAndDecryption;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class EncryptionAndDecryption {
-//Инициализация массивов под алфавит:
-    private float[] alphabet1 = new float[64]; //Исходный алфавит, [А-Я, а-я]
-    private float[] alphabet2 = new float[64]; //Алфавит на выходе
+    //РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РјР°СЃСЃРёРІРѕРІ РїРѕРґ Р°Р»С„Р°РІРёС‚:
+    private float[] alphabet1 = new float[64]; //РСЃС…РѕРґРЅС‹Р№ Р°Р»С„Р°РІРёС‚, [Рђ-РЇ, Р°-СЏ]
+    private float[] alphabet2 = new float[64]; //РђР»С„Р°РІРёС‚ РЅР° РІС‹С…РѕРґРµ
 
-//=======================================================Метод шифрования алгоритмом Цезаря с задаваемым пользователем сдвигом - shift:=============================================
+//=======================================================РњРµС‚РѕРґ С€РёС„СЂРѕРІР°РЅРёСЏ Р°Р»РіРѕСЂРёС‚РјРѕРј Р¦РµР·Р°СЂСЏ СЃ Р·Р°РґР°РІР°РµРјС‹Рј РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј СЃРґРІРёРіРѕРј - shift:=============================================
 
-    public void encrypt (int shift) throws Exception{
+    public void encrypt (int shift, String nameIn, String nameOut) throws Exception{
 
-        int letter; //индекс буквы
+        int letter; //РёРЅРґРµРєСЃ Р±СѓРєРІС‹
 
-        //Открываем поток чтения файла и задаём для данного потока кодировку UTF-8:
-        FileInputStream file = new FileInputStream("F:/ProjectFromGod1/Cryptography/Lab1/in.txt");
+        //РћС‚РєСЂС‹РІР°РµРј РїРѕС‚РѕРє С‡С‚РµРЅРёСЏ С„Р°Р№Р»Р° Рё Р·Р°РґР°С‘Рј РґР»СЏ РґР°РЅРЅРѕРіРѕ РїРѕС‚РѕРєР° РєРѕРґРёСЂРѕРІРєСѓ UTF-8:
+        FileInputStream file = new FileInputStream(nameIn);
         InputStreamReader text = new InputStreamReader(file,"UTF-8");
 
 
-        //Открываем поток записи с кодировкой UTF-8
-        OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream("F:/ProjectFromGod1/Cryptography/Lab1/OutEncrypted.txt"), StandardCharsets.UTF_8);
+        //РћС‚РєСЂС‹РІР°РµРј РїРѕС‚РѕРє Р·Р°РїРёСЃРё СЃ РєРѕРґРёСЂРѕРІРєРѕР№ UTF-8
+        OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(nameOut), StandardCharsets.UTF_8);
 
-        //Алгоритм шифрования:
-        //1. Читаем файл посимвольно до конца. Конец и есть (-1)
-        //2. Если у нас русскоязычная буква (Диапазон от 1040 до 1103, Ё не включена в диапазон), то инкрементируем количество этой буквы в массиве алфавит (считаем количество)
-        //3. После делаем саму зашифровку с помощью сдвига. Если сдвигом мы вышли за грани алфавита русского, то циклим сдвиг на начало алфавита.
-        //4. Знаки препинания не затрагиваются, иные буквы - тоже
-        //5. После того как получили зашифрованую букву мы инкрементируем количество этой буквы в тексте во втором массиве алфавита
-        //6. Запись символа в файл
+        //РђР»РіРѕСЂРёС‚Рј С€РёС„СЂРѕРІР°РЅРёСЏ:
+        //1. Р§РёС‚Р°РµРј С„Р°Р№Р» РїРѕСЃРёРјРІРѕР»СЊРЅРѕ РґРѕ РєРѕРЅС†Р°. РљРѕРЅРµС† Рё РµСЃС‚СЊ (-1)
+        //2. Р•СЃР»Рё Сѓ РЅР°СЃ СЂСѓСЃСЃРєРѕСЏР·С‹С‡РЅР°СЏ Р±СѓРєРІР° (Р”РёР°РїР°Р·РѕРЅ РѕС‚ 1040 РґРѕ 1103, РЃ РЅРµ РІРєР»СЋС‡РµРЅР° РІ РґРёР°РїР°Р·РѕРЅ), С‚Рѕ РёРЅРєСЂРµРјРµРЅС‚РёСЂСѓРµРј РєРѕР»РёС‡РµСЃС‚РІРѕ СЌС‚РѕР№ Р±СѓРєРІС‹ РІ РјР°СЃСЃРёРІРµ Р°Р»С„Р°РІРёС‚ (СЃС‡РёС‚Р°РµРј РєРѕР»РёС‡РµСЃС‚РІРѕ)
+        //3. РџРѕСЃР»Рµ РґРµР»Р°РµРј СЃР°РјСѓ Р·Р°С€РёС„СЂРѕРІРєСѓ СЃ РїРѕРјРѕС‰СЊСЋ СЃРґРІРёРіР°. Р•СЃР»Рё СЃРґРІРёРіРѕРј РјС‹ РІС‹С€Р»Рё Р·Р° РіСЂР°РЅРё Р°Р»С„Р°РІРёС‚Р° СЂСѓСЃСЃРєРѕРіРѕ, С‚Рѕ С†РёРєР»РёРј СЃРґРІРёРі РЅР° РЅР°С‡Р°Р»Рѕ Р°Р»С„Р°РІРёС‚Р°.
+        //4. Р—РЅР°РєРё РїСЂРµРїРёРЅР°РЅРёСЏ РЅРµ Р·Р°С‚СЂР°РіРёРІР°СЋС‚СЃСЏ, РёРЅС‹Рµ Р±СѓРєРІС‹ - С‚РѕР¶Рµ
+        //5. РџРѕСЃР»Рµ С‚РѕРіРѕ РєР°Рє РїРѕР»СѓС‡РёР»Рё Р·Р°С€РёС„СЂРѕРІР°РЅСѓСЋ Р±СѓРєРІСѓ РјС‹ РёРЅРєСЂРµРјРµРЅС‚РёСЂСѓРµРј РєРѕР»РёС‡РµСЃС‚РІРѕ СЌС‚РѕР№ Р±СѓРєРІС‹ РІ С‚РµРєСЃС‚Рµ РІРѕ РІС‚РѕСЂРѕРј РјР°СЃСЃРёРІРµ Р°Р»С„Р°РІРёС‚Р°
+        //6. Р—Р°РїРёСЃСЊ СЃРёРјРІРѕР»Р° РІ С„Р°Р№Р»
 
         while ((letter=text.read())!=-1){
             if (letter>=1040&letter<=1103) {
                 alphabet1[letter - 1040]++;
                 letter += shift;
                 if (letter > 1103) letter -= 64;
-                alphabet2[letter - 1040]++;
+                 alphabet2[letter - 1040]++;
             }
-            writer.write(letter); //запись зашифрованного текста в файл
+            writer.write(letter); //Р·Р°РїРёСЃСЊ Р·Р°С€РёС„СЂРѕРІР°РЅРЅРѕРіРѕ С‚РµРєСЃС‚Р° РІ С„Р°Р№Р»
         }
-        //Закрываем потоки
+        //Р—Р°РєСЂС‹РІР°РµРј РїРѕС‚РѕРєРё
         text.close();
         file.close();
         writer.close();
     }
 
-//==================================================================================================================================================================================
-//=======================================================Метод дешифрирования алгоритмом Цезаря частотным анализом: ================================================================
-    //Метод дешифрирования шифра Цезаря частотным анализом:
+    //==================================================================================================================================================================================
+//=======================================================РњРµС‚РѕРґ РґРµС€РёС„СЂРёСЂРѕРІР°РЅРёСЏ Р°Р»РіРѕСЂРёС‚РјРѕРј Р¦РµР·Р°СЂСЏ С‡Р°СЃС‚РѕС‚РЅС‹Рј Р°РЅР°Р»РёР·РѕРј: ================================================================
+    //РњРµС‚РѕРґ РґРµС€РёС„СЂРёСЂРѕРІР°РЅРёСЏ С€РёС„СЂР° Р¦РµР·Р°СЂСЏ С‡Р°СЃС‚РѕС‚РЅС‹Рј Р°РЅР°Р»РёР·РѕРј:
     public void  decrypt () throws Exception {
 
-        //Инициализация массива для индексов, чьи частоты совпали
+        //РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РјР°СЃСЃРёРІР° РґР»СЏ РёРЅРґРµРєСЃРѕРІ, С‡СЊРё С‡Р°СЃС‚РѕС‚С‹ СЃРѕРІРїР°Р»Рё
         int[] find = new int[64];
 
-        //Открываем поток чтения и отправляем в него ЗАШИФРОВАННЫЙ!!! файл с кодировкой UTF-8:
-        FileInputStream file = new FileInputStream("F:/ProjectFromGod1/Cryptography/Lab1/OutEncrypted.txt");
+        //РћС‚РєСЂС‹РІР°РµРј РїРѕС‚РѕРє С‡С‚РµРЅРёСЏ Рё РѕС‚РїСЂР°РІР»СЏРµРј РІ РЅРµРіРѕ Р—РђРЁРР¤Р РћР’РђРќРќР«Р™!!! С„Р°Р№Р» СЃ РєРѕРґРёСЂРѕРІРєРѕР№ UTF-8:
+        FileInputStream fileFull = new FileInputStream("C:/Cryptography/InFull.txt");
+        InputStreamReader textFull = new InputStreamReader(fileFull, "UTF-8");
+
+
+        //РћС‚РєСЂС‹РІР°РµРј РїРѕС‚РѕРє Р·Р°РїРёСЃРё СЃ РєРѕРґРёСЂРѕРІРєРѕР№ UTF-8 РёС‚РѕРіРѕРІРѕРіРѕ РґРµС€РёС„СЂРѕРІР°РЅРЅРѕРіРѕ С‚РµРєСЃС‚Р°:
+        OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream("C:/Cryptography/OutDecrypted.txt"), StandardCharsets.UTF_8);
+
+
+        Map<Character, Double> mapEnc = analize("C:/Cryptography/OutEncrypted.txt");
+        Map<Character, Double> mapFull = analize("C:/Cryptography/InFull.txt");
+
+        Character maxFull = 'a';
+        Double maxFullEl = -1.0;
+        Character maxEnc  = 'a';
+        Double maxEncEl = -1.0;
+
+        for(Character c : mapEnc.keySet()) {
+           if(mapEnc.get(c) > maxEncEl){
+               maxEnc = c;
+               maxEncEl = mapEnc.get(c);
+           }
+        }
+
+        for(Character c : mapFull.keySet()) {
+            if(mapFull.get(c) > maxFullEl){
+                maxFull = c;
+                maxFullEl = mapFull.get(c);
+            }
+        }
+
+        int shift = 32 + (int)maxFull - (int)maxEnc;
+
+        encrypt(shift, "C:/Cryptography/OutEncrypted.txt", "C:/Cryptography/OutDecrypted.txt");
+
+        System.out.println(maxEnc);
+        System.out.println(maxFull);
+        System.out.println("shift = " + shift);
+               //Р—Р°РєСЂС‹РІР°РµРј РїРѕС‚РѕРєРё
+        //text.close();
+        //file.close();
+        writer.close();
+
+    }
+
+    Map<Character, Double> analize(String name) throws IOException {
+
+        FileInputStream file = new FileInputStream(name);//"C:/Cryptography/OutEncrypted.txt"
         InputStreamReader text = new InputStreamReader(file, "UTF-8");
 
-        //Алгоритм для дешифрирования частотным анализом:
-        //1. Определяем количество символов в файле
-        //2. Определяем частоту каждой буквы: количество букв делим на количество всех символов
-        //3. Сверяем частоты зашифрованного и незашифрованного алфавита
-        //4. Совпавшие частоты заносим в отдельную таблицу (в данном случае, массив - find)
-        //5. Расшифровка: если элемент - русскоязычная буква, то...
-        // ...расшифрованная буква будет иметь значение find[letter-1040]+1040, где 1040 - самая первая буква,...
-        //...а find[letter-1040] - буква, которая имеет совпавшие частоты с зашифрованным и исходным алфавитом
-
-        //З.Ы. АЛГОРИТМ ЧАСТОТНОГО АНАЛИЗА НЕ ПОЗВОЛЯЕТ ПОЛНОСТЬЮ РАСШИФРОВАТЬ ТЕКСТ, МОГУТ БЫТЬ КОСЯКИ, И ЭТО НОРМАЛЬНО!
-        //Кол-во символов в файле
-        int SizeFile = file.available();
-
-        //Определение частот для исходного и зашифрованного алфавита
-        for (int i = 0; i < 64; i++) {
-            alphabet1[i] = alphabet1[i] / SizeFile;
-            alphabet2[i] = alphabet2[i] / SizeFile;
-        }
-        //если частота одного алфавита совпадает с другим, то заносим в массив индекс элемента
-        for (int i = 0; i < 64; i++)
-            for (int j = 0; j < 64; j++)
-                if (alphabet2[i] == alphabet1[j]) find[i] = j;
-
-        //Вывод массива индексов (для наглядности)
-        for (int h = 0; h < 64; h++) System.out.println(find[h]);
-
-        //Открываем поток записи с кодировкой UTF-8 итогового дешифрованного текста:
-        OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream("F:/ProjectFromGod1/Cryptography/Lab1/OutDecrypted.txt"), StandardCharsets.UTF_8);
-
-        int letter;
+        int letter, count = 0;
+        Map<Character, Double> m = new HashMap<>();
 
         while ((letter = text.read()) != -1) {
             if (letter >= 1040 & letter <= 1103) {
-                letter = find[letter - 1040] + 1040;
+                if(m.containsKey((char)letter)){
+                    m.put((char)letter, m.get((char)letter) + 1);
+                } else {
+                    m.put((char)letter, 1.0);
+                }
+                count++;
             }
-            writer.write(letter); //запись расшифрованного текста в файл
+            //writer.write(letter);
         }
 
-        //Закрываем потоки:
+        for(Character c : m.keySet()) {
+            m.put(c, m.get(c) / count);
+        }
+        System.out.println(m);
+        System.out.println(count);
         text.close();
         file.close();
-        writer.close();
-
+        return m;
     }
-//==================================================================================================================================================================================
-}
+    //==================================================================================================================================================================================
 
+
+
+}
 
