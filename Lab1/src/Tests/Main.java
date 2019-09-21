@@ -1,19 +1,22 @@
 package Tests;
 
 import CaesarEncryptionAndDecryption.EncryptionAndDecryption;
+
 import java.util.Scanner;
 
 class Main {
     public static void main(String[] args) throws Exception {
-        //Ввод числа
+        //Р’РІРѕРґ С‡РёСЃР»Р°
         Scanner sc = new Scanner(System.in);
 
-        System.out.println("Введите ключ:");
+        System.out.println("Р’РІРµРґРёС‚Рµ РєР»СЋС‡:");
         int number = sc.nextInt();
-        System.out.println("Алфавит сдвинут на " + number + " ячеек! Теперь смотрите в файл OutEncrypted.txt!");
+        System.out.println("РђР»С„Р°РІРёС‚ СЃРґРІРёРЅСѓС‚ РЅР° " + number + " СЏС‡РµРµРє! РўРµРїРµСЂСЊ СЃРјРѕС‚СЂРёС‚Рµ РІ С„Р°Р№Р» OutEncrypted.txt!");
         EncryptionAndDecryption book = new EncryptionAndDecryption();
-        book.encrypt(number);
+        book.encrypt(number, "C:/Cryptography/in.txt", "C:/Cryptography/OutEncrypted.txt" );
         book.decrypt();
     }
 }
+
+
 
